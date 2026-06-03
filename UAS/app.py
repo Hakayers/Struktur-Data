@@ -115,10 +115,26 @@ else:
 
     st.warning("Belum ada data")
 
-# TAMPILKAN DATA
-st.subheader("📋 Data Penjualan")
+# DELETE DATA
+st.subheader("🗑 Hapus Data")
 
-if not df.empty:
-    st.dataframe(df)
-else:
-    st.warning("Belum ada data")
+hapus_kategori = st.selectbox(
+    "Pilih kategori yang ingin dihapus",
+    [
+        "Elektronik",
+        "Fashion",
+        "Kebutuhan Rumah",
+        "Kesehatan"
+    ]
+)
+
+if st.button("Hapus Data"):
+
+    deleted = st.session_state.sales_list.delete_by_category(
+        hapus_kategori
+    )
+
+    if deleted:
+        st.success("Data berhasil dihapus")
+    else:
+        st.error("Data tidak ditemukan")
