@@ -72,3 +72,26 @@ class SalesLinkedList:
             current = current.next
 
         return pd.DataFrame(data)
+
+# SEARCH DATA
+    def search_category(self, keyword):
+
+        current = self.head
+        result = []
+
+        while current:
+
+            if keyword.lower() in current.kategori.lower():
+
+                result.append({
+                    'Tanggal': current.tanggal,
+                    'Kategori': current.kategori,
+                    'Wilayah': current.wilayah,
+                    'Jumlah_Penjualan': current.jumlah,
+                    'Pendapatan': current.pendapatan,
+                    'Total_Pendapatan': current.total
+                })
+
+            current = current.next
+
+        return pd.DataFrame(result)

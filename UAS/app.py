@@ -89,6 +89,32 @@ st.write("Size:", st.session_state.sales_list.size)
 # AMBIL DATA DARI LINKED LIST
 df = st.session_state.sales_list.traversal_forward()
 
+# SEARCH DATA
+st.subheader("🔍 Cari Data")
+
+keyword = st.text_input("Cari kategori")
+
+if keyword:
+
+    result = st.session_state.sales_list.search_category(
+        keyword
+    )
+
+    if not result.empty:
+        st.dataframe(result)
+    else:
+        st.warning("Data tidak ditemukan")
+
+# TAMPILKAN DATA
+st.subheader("📋 Data Penjualan")
+
+if not df.empty:
+    st.dataframe(df)
+else:
+    st.warning("Belum ada data")
+
+    st.warning("Belum ada data")
+
 # TAMPILKAN DATA
 st.subheader("📋 Data Penjualan")
 
