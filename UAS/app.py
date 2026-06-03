@@ -3,93 +3,82 @@ import logic
 
 # KONFIGURASI HALAMAN
 st.set_page_config(
-    page_title="VizBiz Dashboard",
+    page_title="VizBiz Analytics",
     page_icon="📊",
     layout="wide"
 )
 
 # HEADER
-st.title("📊 VizBiz Business Intelligence Dashboard")
-st.caption("Dashboard Analisis Penjualan Menggunakan Doubly Linked List")
+st.title("📊 VizBiz Analytics")
+
+st.markdown("""
+### Business Intelligence Dashboard
+
+Pantau performa penjualan berdasarkan kategori produk dan wilayah secara real-time menggunakan implementasi Doubly Linked List.
+""")
 
 # SESSION STATE
 if 'sales_list' not in st.session_state:
     st.session_state.sales_list = logic.SalesLinkedList()
 
-st.subheader("Status Sistem")
-
-st.success("Doubly Linked List berhasil diinisialisasi")
-
-st.write("Head:", st.session_state.sales_list.head)
-st.write("Tail:", st.session_state.sales_list.tail)
-st.write("Size:", st.session_state.sales_list.size)
-
-if 'sales_list' not in st.session_state:
-    st.session_state.sales_list = logic.SalesLinkedList()
-
-st.subheader("Status Sistem")
 # FORM INPUT DATA
-st.subheader("➕ Tambah Data Penjualan")
+with st.sidebar:
 
-st.success("Doubly Linked List berhasil diinisialisasi")
-with st.form("form_penjualan"):
+    st.header("➕ Input Data Penjualan")
 
-    tanggal = st.date_input("Tanggal")
+    with st.form("form_penjualan"):
 
-    kategori = st.selectbox(
-        "Kategori",
-        [
-            "Elektronik",
-            "Fashion",
-            "Kebutuhan Rumah",
-            "Kesehatan"
-        ]
-    )
+        tanggal = st.date_input("Tanggal")
 
-    wilayah = st.selectbox(
-        "Wilayah",
-        [
-            "Jakarta",
-            "Bandung",
-            "Surabaya",
-            "Makassar"
-        ]
-    )
-
-    jumlah = st.number_input(
-        "Jumlah Penjualan",
-        min_value=1,
-        step=1
-    )
-
-    pendapatan = st.number_input(
-        "Pendapatan",
-        min_value=1000
-    )
-
-    submit = st.form_submit_button("Tambah Data")
-
-    if submit:
-
-        st.session_state.sales_list.insert_end(
-            str(tanggal),
-            kategori,
-            wilayah,
-            jumlah,
-            pendapatan
+        kategori = st.selectbox(
+            "Kategori",
+            [
+                "Elektronik",
+                "Fashion",
+                "Kebutuhan Rumah",
+                "Kesehatan"
+            ]
         )
 
-        st.success("Data berhasil ditambahkan")
+        wilayah = st.selectbox(
+            "Wilayah",
+            [
+                "Jakarta",
+                "Bandung",
+                "Surabaya",
+                "Makassar"
+            ]
+        )
 
-st.write("Head:", st.session_state.sales_list.head)
-st.write("Tail:", st.session_state.sales_list.tail)
-st.write("Size:", st.session_state.sales_list.size)
+        jumlah = st.number_input(
+            "Jumlah Penjualan",
+            min_value=1,
+            step=1
+        )
 
+        pendapatan = st.number_input(
+            "Pendapatan",
+            min_value=1000
+        )
+
+        submit = st.form_submit_button("💾 Simpan Data")
+
+        if submit:
+
+            st.session_state.sales_list.insert_end(
+                str(tanggal),
+                kategori,
+                wilayah,
+                jumlah,
+                pendapatan
+            )
+
+            st.success("Data berhasil ditambahkan")
 
 # AMBIL DATA DARI LINKED LIST
 df = st.session_state.sales_list.traversal_forward()
 
- #KPI DASHBOARD
+# KPI DASHBOARD
 if not df.empty:
 
     st.subheader("📌 KPI Dashboard")
@@ -121,7 +110,41 @@ if not df.empty:
             "Rata-rata Pendapatan",
             f"Rp {metrics['avg_income']:,.0f}"
         )
+        
+    top_category = (
+    df.groupby('Kategori')['Total_Pendapatan']
+    .sum()
+    .idxmax()
+    )
 
+    st.info(
+    f"📌 Kategori dengan kontribusi pendapatan terbesar saat ini adalah **{top_category}**."
+    )
+    
+# VISUALISASI DATA
+if not df.empty:
+
+    st.subheader("📈 Visualisasi Penjualan")
+
+    col_chart1, col_chart2 = st.columns(2)
+
+    kategori_chart = (
+        df.groupby('Kategori')['Total_Pendapatan']
+        .sum()
+    )
+
+    wilayah_chart = (
+        df.groupby('Wilayah')['Total_Pendapatan']
+        .sum()
+    )
+
+    with col_chart1:
+        st.markdown("#### Pendapatan per Kategori")
+        st.bar_chart(kategori_chart)
+
+    with col_chart2:
+        st.markdown("#### Pendapatan per Wilayah")
+        st.line_chart(wilayah_chart)
 
 # SEARCH DATA
 st.subheader("🔍 Cari Data")
@@ -141,13 +164,22 @@ if keyword:
 
 # TAMPILKAN DATA
 st.subheader("📋 Data Penjualan")
+st.divider()
+
+st.subheader("📋 Detail Data Penjualan")
 
 if not df.empty:
     st.dataframe(df)
+
+    st.dataframe(
+        df,
+        use_container_width=True
+    )
+
 else:
     st.warning("Belum ada data")
 
-    st.warning("Belum ada data")
+    st.warning("Belum ada data penjualan.")
 
 # DELETE DATA
 st.subheader("🗑 Hapus Data")
@@ -175,6 +207,7 @@ if st.button("Hapus Data"):
 
 # VISUALISASI DATA
 if not df.empty:
+    st.divider()
 
     st.subheader("📈 Visualisasi Penjualan")
 
@@ -197,3 +230,6 @@ if not df.empty:
     with col_chart2:
         st.markdown("#### Pendapatan per Wilayah")
         st.line_chart(wilayah_chart)
+st.caption(
+    "VizBiz Analytics Dashboard | UAS Struktur Data | Doubly Linked List + Streamlit"
+)
