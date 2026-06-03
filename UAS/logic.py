@@ -27,11 +27,8 @@ class SalesLinkedList:
         self.head = None
         self.tail = None
         self.size = 0
-        self.head = None
-        self.tail = None
-        self.size = 0
-        
- # INSERT DATA
+
+    # INSERT DATA
     def insert_end(self,tanggal,kategori,wilayah,jumlah,pendapatan):
 
         new_node = SalesNode(tanggal,kategori,wilayah,jumlah,pendapatan)
@@ -51,51 +48,70 @@ class SalesLinkedList:
 
         self.size += 1
 
-       
-# TRAVERSAL FORWARD
+    # TRAVERSAL FORWARD
     def traversal_forward(self):
 
+        df = pd.DataFrame(
+            columns=[
+            'Tanggal',
+            'Kategori',
+            'Wilayah',
+            'Jumlah_Penjualan',
+            'Pendapatan',
+            'Total_Pendapatan'
+            ]
+        )
+
         current = self.head
-        data = []
 
         while current:
 
-            data.append({
-            'Tanggal': current.tanggal,
-            'Kategori': current.kategori,
-            'Wilayah': current.wilayah,
-            'Jumlah_Penjualan': current.jumlah,
-            'Pendapatan': current.pendapatan,
-            'Total_Pendapatan': current.total
-        })
+            df.loc[len(df)] = [
+                current.tanggal,
+                current.kategori,
+                current.wilayah,
+                current.jumlah,
+                current.pendapatan,
+                current.total
+            ]
 
             current = current.next
 
-        return pd.DataFrame(data)
+        return df
 
-# SEARCH DATA
+    # SEARCH DATA
     def search_category(self, keyword):
 
+        df = pd.DataFrame(
+            columns=[
+                'Tanggal',
+                'Kategori',
+                'Wilayah',
+                'Jumlah_Penjualan',
+                'Pendapatan',
+                'Total_Pendapatan'
+            ]
+        )
+
         current = self.head
-        result = []
 
         while current:
 
             if keyword.lower() in current.kategori.lower():
 
-                result.append({
-                    'Tanggal': current.tanggal,
-                    'Kategori': current.kategori,
-                    'Wilayah': current.wilayah,
-                    'Jumlah_Penjualan': current.jumlah,
-                    'Pendapatan': current.pendapatan,
-                    'Total_Pendapatan': current.total
-                })
+                df.loc[len(df)] = [
+                    current.tanggal,
+                    current.kategori,
+                    current.wilayah,
+                    current.jumlah,
+                    current.pendapatan,
+                    current.total
+                ]
 
             current = current.next
 
-        return pd.DataFrame(result)
-
+        return df
+    
 # DELETE DATA
     def delete_by_category(self, category):
 
@@ -105,58 +121,50 @@ class SalesLinkedList:
 
             if current.kategori == category:
 
-            # Jika node pertama
-             if current.prev is None:
                 # Jika node pertama
                 if current.prev is None:
 
                     self.head = current.next
-                self.head = current.next
 
-                if self.head:
-                    self.head.prev = None
                     if self.head:
                         self.head.prev = None
 
-            # Jika node tengah / akhir
-            else:
+                # Jika node tengah / akhir
+                else:
 
-                current.prev.next = current.next
+                    current.prev.next = current.next
 
-            # Jika node terakhir
-            if current.next:
+                # Jika node terakhir
+                if current.next:
 
-                current.next.prev = current.prev
+                    current.next.prev = current.prev
 
-            else:
+                else:
 
-                self.tail = current.prev
+                    self.tail = current.prev
 
-            self.size -= 1
+                self.size -= 1
 
-            return True
+                return True
 
             current = current.next
-        current = current.next
 
-        return False    
+        return False  
+      
 # KPI DATA
 def get_kpi_metrics(df):
 
-        total_revenue = df['Total_Pendapatan'].sum()
+    total_revenue = df['Total_Pendapatan'].sum()
 
-        total_customer = len(df)
+    total_customer = len(df)
 
-        avg_sales = df['Jumlah_Penjualan'].mean()
+    avg_sales = df['Jumlah_Penjualan'].mean()
 
-        avg_income = df['Pendapatan'].mean()
+    avg_income = df['Pendapatan'].mean()
 
-        return False
-        return {
-            
-        'total_revenue': total_revenue,
-        'total_customer': total_customer,
-        'avg_sales': avg_sales,
-        'avg_income': avg_income
-        
-        }
+    return (
+        total_revenue,
+        total_customer,
+        avg_sales,
+        avg_income
+    )
