@@ -84,3 +84,15 @@ with st.form("form_penjualan"):
 st.write("Head:", st.session_state.sales_list.head)
 st.write("Tail:", st.session_state.sales_list.tail)
 st.write("Size:", st.session_state.sales_list.size)
+
+
+# AMBIL DATA DARI LINKED LIST
+df = st.session_state.sales_list.traversal_forward()
+
+# TAMPILKAN DATA
+st.subheader("📋 Data Penjualan")
+
+if not df.empty:
+    st.dataframe(df)
+else:
+    st.warning("Belum ada data")

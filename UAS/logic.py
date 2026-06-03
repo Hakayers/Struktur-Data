@@ -50,3 +50,25 @@ class SalesLinkedList:
             self.tail = new_node
 
         self.size += 1
+
+       
+# TRAVERSAL FORWARD
+    def traversal_forward(self):
+
+        current = self.head
+        data = []
+
+        while current:
+
+            data.append({
+            'Tanggal': current.tanggal,
+            'Kategori': current.kategori,
+            'Wilayah': current.wilayah,
+            'Jumlah_Penjualan': current.jumlah,
+            'Pendapatan': current.pendapatan,
+            'Total_Pendapatan': current.total
+        })
+
+            current = current.next
+
+        return pd.DataFrame(data)
